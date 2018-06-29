@@ -3,16 +3,19 @@ const bodyParser = require('body-parser');
 const errorHandler = require('errorhandler');
 const morgan = require('morgan');
 
+const menuRouter = require('./api/menus.js');
 const employeeRouter = require('./api/employees.js');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
 //middleware
-//app.use(morgan('dev'));
+app.use(morgan('dev'));
 app.use(bodyParser.json());
 
 app.use('/api/employees', employeeRouter);
+
+app.use('/api/menus', menuRouter);
 
 app.use(errorHandler());
 

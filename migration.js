@@ -42,7 +42,7 @@ db.run(`CREATE TABLE IF NOT EXISTS MenuItem(
   description STRING,
   inventory INTEGER NOT NULL,
   price INTEGER NOT NULL,
-  menu_id INTEGER NOT_NULL,
+  menu_id INTEGER NOT NULL,
   FOREIGN KEY (menu_id) REFERENCES Menu(id)
 )`, (err) => {
   if(err){

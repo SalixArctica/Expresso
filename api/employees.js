@@ -64,6 +64,9 @@ employeeRouter.post('/', employeeChecker, (req, res, next) => {
       next(err);
     }
     db.get(`SELECT * FROM Employee WHERE id = ${this.lastID}`, (err, row) =>{
+      if(err){
+        next(err);
+      }
       res.status(201).json({employee: row});
     });
   });
@@ -71,16 +74,6 @@ employeeRouter.post('/', employeeChecker, (req, res, next) => {
 
 employeeRouter.put('/:employeeId', employeeChecker, (req, res, next) => {
   employee = req.body.employee;
-
-  //check that employee exists
-  db.get(`SELECT * FROM Employee WHERE id = ${req.params.employeeId}`, (err, row) => {
-    if(err){
-      next(err);
-    }
-    else if(!row){
-      res.status(400).send();
-    }
-  });
 
   sql = `UPDATE Employee SET
   name = $name,
