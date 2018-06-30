@@ -1,5 +1,7 @@
 const sqlite3 = require('sqlite3');
 const express = require('express');
+const menuItemRouter = require('./menuItems.js');
+
 
 menuRouter = express.Router();
 db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
@@ -49,11 +51,13 @@ menuRouter.param('menuId', (req, res, next, menuId) => {
     if(err){
       next(err);
     }
-    if(row){
+    else if(row){
       req.menu = row;
       next();
     }
-    res.status(404).send();
+    else{
+        res.status(404).send();
+    }
   });
 });
 
@@ -82,5 +86,31 @@ menuRouter.put('/:menuId', menuChecker, (req, res, next) => {
     });
   });
 });
+
+menuRouter.delete('/:menuId', (req, res, next) => {
+  sql = `SELECT * FROM MenuItem WHERE menu_id = ${req.params.menuId}`;
+
+  //check for menuItems in the menu
+  db.get(sql, (err, row) => {
+    if(err){
+      next(err);
+    }
+    if(row){
+      res.status(400).send();
+    }
+    else{
+      sql = `DELETE FROM Menu WHERE id = ${req.params.menuId}`;
+
+      db.run(sql, (err) => {
+        if(err){
+        next(err);
+        }
+        res.status(204).send();
+      });
+    }
+  });
+});
+
+menuRouter.use('/:menuId/menu-items', menuItemRouter);
 
 module.exports = menuRouter;
