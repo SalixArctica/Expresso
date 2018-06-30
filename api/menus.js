@@ -16,17 +16,22 @@ menuRouter.get('/', (req, res, next) => {
 });
 
 menuChecker = (req, res, next) => {
-  if(req.body.menu.name){
+  if(req.body.menu.title){
     next();
   }
-  res.status(404).send();
+  else{
+    res.status(400).send();
+  }
 };
 
 menuRouter.post('/', menuChecker, (req, res, next) => {
-  sql = `INSERT INTO Menu (name)
-  VALUES (${req.body.menu.name})`;
+  sql = `INSERT INTO Menu (title) VALUES ($title)`;
 
-  db.run(sql, function(err){
+  values = {
+    $title: req.body.menu.title
+  };
+
+  db.run(sql, values, function(err){
     if(err){
       next(err);
     }
@@ -57,10 +62,15 @@ menuRouter.get('/:menuId', (req, res, next) => {
 });
 
 menuRouter.put('/:menuId', menuChecker, (req, res, next) => {
-  sql = `UPDATE Menu SET name = ${req.body.menu.name}
-  WHERE id = ${req.params.menuId}`;
+  sql = `UPDATE Menu SET title = $title
+  WHERE id = $id`;
 
-  db.run(sql, (err) => {
+  values = {
+    $title: req.body.menu.title,
+    $id: req.params.menuId
+  };
+
+  db.run(sql, values, (err) => {
     if(err){
       next(err);
     }
